@@ -5,12 +5,14 @@ import {
 } from "../../../client";
 import { useState, useEffect } from "react";
 import { Heart, Info } from "lucide-react";
+import { useFavorites } from "../../store/useFavorites";
 
 export default function Home() {
   const [page, setPage] = useState<number>(1);
   const [data, setData] = useState<CharactersPage | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const { addFavorite, removeFavorite, isFavorite } = useFavorites();
 
   useEffect(() => {
     async function load() {
@@ -84,10 +86,19 @@ export default function Home() {
                   </div>
                   <div className="flex gap-2">
                     <button
+                      onClick={() =>
+                        isFavorite(char.id)
+                          ? removeFavorite(char.id)
+                          : addFavorite(char)
+                      }
                       className="p-1 rounded-full transition bg-white/20 hover:bg-white/30 group/fav hover:cursor-pointer"
                       aria-label="Favorite"
                     >
-                      <Heart className="w-5 h-5 text-white group-hover/fav:fill-red-500 group-hover/fav:text-red-500 transition-colors duration-200" />
+                      <Heart
+                        className={`w-5 h-5 text-white ${
+                          isFavorite(char.id) ? "fill-red-500" : ""
+                        } transition-colors duration-200`}
+                      />
                     </button>
                     <button
                       className="p-1 rounded-full bg-white/20 hover:bg-white/30 transition group/details hover:cursor-pointer"
