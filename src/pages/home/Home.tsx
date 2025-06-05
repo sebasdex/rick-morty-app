@@ -7,15 +7,18 @@ import { useState, useEffect } from "react";
 import { Heart, Info } from "lucide-react";
 import { useFavorites } from "../../store/useFavorites";
 import { Link } from "react-router";
+import { useSearchParams } from "react-router";
 
 export default function Home() {
-  const [page, setPage] = useState<number>(1);
   const [data, setData] = useState<CharactersPage | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const { addFavorite, removeFavorite, isFavorite } = useFavorites();
   const [search, setSearch] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const pageParam = Number(searchParams.get("page")) || 1;
+  const [page, setPage] = useState(pageParam);
 
   useEffect(() => {
     async function load() {
@@ -33,6 +36,11 @@ export default function Home() {
 
     load();
   }, [page, searchTerm]);
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    setSearchParams({ page: String(newPage) });
+  };
 
   if (loading) {
     return (
@@ -62,6 +70,16 @@ export default function Home() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10 text-gray-900 w-full flex-1">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">
+          Explora el multiverso de Rick & Morty
+        </h1>
+        <p className="mt-2 text-gray-500 text-sm sm:text-base max-w-xl mx-auto">
+          Descubre personajes de todas las dimensiones, filtra por nombre y
+          guarda tus favoritos del universo más caótico de la TV.
+        </p>
+      </div>
+
       <div className="mb-6 flex gap-2 w-full">
         <input
           type="text"
@@ -148,7 +166,7 @@ export default function Home() {
 
       <div className="mt-10 flex flex-col sm:flex-row items-center justify-between">
         <button
-          onClick={() => data.info.prev && setPage(data.info.prev)}
+          onClick={() => data.info.prev && handlePageChange(data.info.prev)}
           disabled={!data.info.prev}
           className={`px-4 py-2 rounded-lg font-semibold transition-colors hover:cursor-pointer ${
             data.info.prev
@@ -165,7 +183,7 @@ export default function Home() {
         </span>
 
         <button
-          onClick={() => data.info.next && setPage(data.info.next)}
+          onClick={() => data.info.next && handlePageChange(data.info.next)}
           disabled={!data.info.next}
           className={`px-4 py-2 rounded-lg font-semibold transition-colors hover:cursor-pointer ${
             data.info.next
