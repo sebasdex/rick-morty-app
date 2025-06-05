@@ -61,7 +61,7 @@ export default function Home() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10 text-gray-900">
+    <div className="max-w-7xl mx-auto px-4 py-10 text-gray-900 w-full flex-1">
       <div className="mb-6 flex gap-2 w-full">
         <input
           type="text"

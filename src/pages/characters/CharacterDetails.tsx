@@ -34,7 +34,7 @@ export default function CharacterDetails() {
   const fav = isFavorite(character.id);
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10 text-gray-800">
+    <div className="max-w-3xl mx-auto px-4 py-10 text-gray-800 w-full flex-1">
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={() => navigate(-1)}
