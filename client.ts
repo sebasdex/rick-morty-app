@@ -1,26 +1,3 @@
-import { GraphQLClient, gql } from "graphql-request";
-
-const ENDPOINT = "https://rickandmortyapi.com/graphql";
-
-const client = new GraphQLClient(ENDPOINT);
-
-const GET_CHARACTERS = gql`
-    query GetCharacters($page: Int!) {
-    characters(page: $page) {
-      info {
-        pages
-        next
-        prev
-      }
-      results {
-        id
-        name
-        status
-        image
-      }
-    }
-  }
-`;
 
 export type Character = {
     id: string;
@@ -56,15 +33,42 @@ export type Episode = {
     name: string;
 }
 
-export async function fetchCharacters(page:number): Promise<CharactersPage> {
-    try {
-        const data = await client.request<{characters:CharactersPage}>(GET_CHARACTERS, {page});
-        return data.characters;
-    } catch (error) {
-        console.error("Error al obtener personajes", error);
-        throw new Error("No se pudo cargar la pagina de personajes");
-    }
+export async function fetchCharacters(
+  page = 1,
+  name?: string
+): Promise<CharactersPage> {
+  const res = await fetch("https://rickandmortyapi.com/graphql", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      query: `
+        query ($page: Int, $name: String) {
+          characters(page: $page, filter: { name: $name }) {
+            info {
+              count pages next prev
+            }
+            results {
+              id
+              name
+              image
+              status
+              species
+              gender
+              origin { name }
+              location { name }
+              episode { id name }
+            }
+          }
+        }
+      `,
+      variables: { page, name },
+    }),
+  });
+
+  const json = await res.json();
+  return json.data.characters;
 }
+
 
 export async function fetchCharacterById(id: number): Promise<CharacterDetails> {
   const res = await fetch("https://rickandmortyapi.com/graphql", {
