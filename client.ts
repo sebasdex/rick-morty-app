@@ -39,6 +39,23 @@ export type CharactersPage = {
     results:Character[];
 };
 
+export type CharacterDetails = {
+    id: string;
+    name: string;
+    status: string;
+    image: string;
+    species: string;
+    gender: string;
+    origin: { name: string };
+    location: { name: string };
+    episode: Episode[];
+}
+
+export type Episode = {
+    id: string;
+    name: string;
+}
+
 export async function fetchCharacters(page:number): Promise<CharactersPage> {
     try {
         const data = await client.request<{characters:CharactersPage}>(GET_CHARACTERS, {page});
@@ -47,5 +64,35 @@ export async function fetchCharacters(page:number): Promise<CharactersPage> {
         console.error("Error al obtener personajes", error);
         throw new Error("No se pudo cargar la pagina de personajes");
     }
+}
+
+export async function fetchCharacterById(id: number): Promise<CharacterDetails> {
+  const res = await fetch("https://rickandmortyapi.com/graphql", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      query: `
+        query {
+          character(id: ${id}) {
+            id
+            name
+            image
+            status
+            species
+            gender
+            origin { name }
+            location { name }
+            episode {
+              id
+              name
+            }
+          }
+        }
+      `,
+    }),
+  });
+
+  const { data } = await res.json();
+  return data.character;
 }
 
