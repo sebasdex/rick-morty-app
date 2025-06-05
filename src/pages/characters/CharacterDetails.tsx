@@ -90,8 +90,10 @@ export default function CharacterDetails() {
 
       <div className="mt-6">
         <h2 className="text-lg font-semibold mb-3 text-center sm:text-left">
-          Aparece en episodios:
+          Aparece en {character.episode.length} episodio
+          {character.episode.length !== 1 ? "s" : ""}
         </h2>
+
         <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
           {character.episode.map((ep) => (
             <span
