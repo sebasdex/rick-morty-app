@@ -8,7 +8,7 @@ function Header() {
         {/* Title */}
         <Link to="/">
           <h1 className="text-2xl sm:text-3xl font-bold tracking-wide text-center sm:text-left">
-            Rick & Morty
+            R&M
           </h1>
         </Link>
 
