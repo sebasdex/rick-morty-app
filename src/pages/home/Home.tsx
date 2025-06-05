@@ -14,13 +14,15 @@ export default function Home() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const { addFavorite, removeFavorite, isFavorite } = useFavorites();
+  const [search, setSearch] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     async function load() {
       setLoading(true);
       setError(null);
       try {
-        const pageData = await fetchCharacters(page);
+        const pageData = await fetchCharacters(page, searchTerm || undefined);
         setData(pageData);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unknown error");
@@ -28,8 +30,9 @@ export default function Home() {
         setLoading(false);
       }
     }
+
     load();
-  }, [page]);
+  }, [page, searchTerm]);
 
   if (loading) {
     return (
@@ -49,8 +52,35 @@ export default function Home() {
 
   if (!data) return null;
 
+  if (data?.results.length === 0) {
+    return (
+      <div className="text-center text-gray-500 mt-10">
+        No se encontraron personajes con el nombre <strong>{search}</strong>.
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-10 text-gray-900">
+      <div className="mb-6 flex gap-2 w-full">
+        <input
+          type="text"
+          placeholder="Buscar personaje por nombre..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full px-4 py-2 border rounded-lg shadow focus:ring-2 focus:ring-cyan-500 outline-none"
+        />
+        <button
+          onClick={() => {
+            setPage(1);
+            setSearchTerm(search.trim());
+          }}
+          className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-500 transition hover:cursor-pointer"
+        >
+          Buscar
+        </button>
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {data.results.map((char: Character) => {
           const statusColor =
